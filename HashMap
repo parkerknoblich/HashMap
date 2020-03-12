@@ -1,6 +1,6 @@
 public class HashMap<K, V> {
 
-    // An array of Entry<K, V>s
+    // An array of key/value entries.
     private Entry<K, V>[] entries;
 
     // Size of map.
