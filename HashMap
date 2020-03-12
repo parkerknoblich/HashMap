@@ -1,0 +1,159 @@
+public class HashMap<K, V> {
+
+    // An array of Entry<K, V>s
+    private Entry<K, V>[] entries;
+
+    // Size of map.
+    private int capacity = 16;
+
+    // Number of entries in the map.
+    private int numEntries;
+
+    // Constructs the Entry<K, V> array of size capacity.
+    public HashMap() {
+        entries = new Entry[capacity];
+    }
+
+    // A class that can hold a key, value, and a reference to the next entry.
+    private static class Entry<K, V> {
+        private K key;
+        private V value;
+        private Entry<K, V> next;
+
+        public Entry(K key, V value, Entry<K, V> next) {
+            this.key = key;
+            this.value = value;
+            this.next = next;
+        }
+    }
+
+    // Adds a new entry to the map.
+    public void put(K key, V value) {
+        if (key == null) {
+            throw new IllegalArgumentException("Null key is not allowed.");
+        }
+        int hash = hash(key);
+        Entry<K, V> entry = new Entry<K, V>(key, value, null);
+        numEntries++;
+        if (entries[hash] == null) {
+            entries[hash] = entry;
+        } else {
+            Entry<K, V> previous = null;
+            Entry<K, V> current = entries[hash];
+            while (current != null) {
+                if (current.key.equals(key)) {
+                    numEntries--;
+                    if (previous == null) {
+                        entry.next = current.next;
+                        entries[hash] = entry;
+                    } else {
+                        entry.next = current.next;
+                        previous.next = entry;
+                    }
+                }
+                previous = current;
+                current = current.next;
+            }
+            previous.next = entry;
+        }
+         if (numEntries / capacity == 1) {
+             capacity *= 2;
+             numEntries = 0;
+             Entry<K, V>[] temp = entries;
+             entries = new Entry[capacity];
+             for (int i = 0; i < temp.length; i++) {
+                 Entry<K, V> current = temp[i];
+                 while (current != null) {
+                     put(current.key, current.value);
+                     current = current.next;
+                 }
+             }
+         }
+    }
+
+    // Returns the value of a given key.
+    public V get(K key) {
+        if (key == null) {
+            return null;
+        }
+        int hash = hash(key);
+        if (entries[hash] == null) {
+            return null;
+        } else {
+            Entry<K, V> temp = entries[hash];
+            while (temp != null) {
+                if (temp.key.equals(key)) {
+                    return temp.value;
+                }
+                temp = temp.next;
+            }
+
+        }
+        return null;
+    }
+
+    // Removes an entry from the map.
+    public boolean remove(K key) {
+        if (key == null) {
+            return false;
+        }
+        int hash = hash(key);
+        if (entries[hash] == null) {
+            return false;
+        } else {
+            Entry<K, V> previous = null;
+            Entry<K, V> current = entries[hash];
+            while (current != null) {
+                if (current.key.equals(key)) {
+                    numEntries--;
+                    if (previous == null) {
+                        entries[hash] = entries[hash].next;
+                    } else {
+                        previous.next = current.next;
+                    }
+                    return true;
+                }
+                previous = current;
+                current = current.next;
+            }
+        }
+        return false;
+    }
+
+    // Returns whether a key is in the map.
+    public boolean containsKey(K key) {
+        if (key == null) {
+            throw new IllegalArgumentException("Null key is not allowed.");
+        }
+        int hash = hash(key);
+        if (entries[hash] == null) {
+            return false;
+        } else {
+            Entry<K, V> temp = entries[hash];
+            while (temp != null) {
+                if (temp.key.equals(key)) {
+                    return true;
+                }
+                temp = temp.next;
+            }
+        }
+        return false;
+    }
+
+    // Returns number of entries in the map.
+    public int size() {
+        return numEntries;
+    }
+
+    // Returns index of array for a new entry.
+    private int hash(K key) {
+        return Math.abs(key.hashCode() % capacity);
+    }
+
+    // Driver method.
+    public static void main(String[] args) {
+        HashMap<String, Integer> map = new HashMap<>();
+        // ...
+    }
+
+ }
